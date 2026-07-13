@@ -41,6 +41,7 @@ COLMAP_ADD_LIBRARY(
         feature_matching.h feature_matching.cc
         feature_matching_utils.h feature_matching_utils.cc
         matcher_cache.h matcher_cache.cc
+        mipmap_matching.h mipmap_matching.cc
         pairing.h pairing.cc
         global_pipeline.h global_pipeline.cc
         image_reader.h image_reader.cc
@@ -149,6 +150,11 @@ COLMAP_ADD_TEST(
 COLMAP_ADD_TEST(
     NAME matcher_cache_test
     SRCS matcher_cache_test.cc
+    LINK_LIBS colmap_controllers
+)
+COLMAP_ADD_TEST(
+    NAME mipmap_matching_test
+    SRCS mipmap_matching_test.cc
     LINK_LIBS colmap_controllers
 )
 COLMAP_ADD_TEST(

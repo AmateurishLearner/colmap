@@ -32,6 +32,7 @@
 #include "colmap/controllers/feature_extraction.h"
 #include "colmap/controllers/feature_matching.h"
 #include "colmap/controllers/image_reader.h"
+#include "colmap/controllers/mipmap_matching.h"
 #include "colmap/controllers/option_manager.h"
 #include "colmap/exe/gui.h"
 #include "colmap/feature/sift.h"
@@ -271,6 +272,51 @@ int RunMatchesImporter(int argc, char** argv) {
     matcher->Start();
     matcher->Wait();
   }
+
+  return EXIT_SUCCESS;
+}
+
+int RunMipMapPairsExporter(int argc, char** argv) {
+  std::filesystem::path output_path;
+  std::filesystem::path debug_path;
+  MipMapMatchingOptions mmap_options;
+
+  OptionManager options;
+  options.AddDatabaseOptions();
+  options.AddRequiredOption("output_path", &output_path);
+  options.AddDefaultOption("debug_path", &debug_path);
+  options.AddDefaultOption("MipMapMatching.num_images",
+                           &mmap_options.num_images);
+  options.AddDefaultOption("MipMapMatching.num_nearest_neighbors",
+                           &mmap_options.num_nearest_neighbors);
+  options.AddDefaultOption("MipMapMatching.num_threads",
+                           &mmap_options.num_threads);
+  options.AddDefaultOption("MipMapMatching.max_num_features",
+                           &mmap_options.max_num_features);
+  if (!options.Parse(argc, argv)) {
+    return EXIT_FAILURE;
+  }
+
+  if (!mmap_options.Check()) {
+    return EXIT_FAILURE;
+  }
+
+  auto database = Database::Open(*options.database_path);
+  const std::vector<MipMapImageData> images =
+      ReadMipMapImageDataFromDatabase(*database, mmap_options.max_num_features);
+
+  LOG(INFO) << "Loaded " << images.size()
+            << " images with SIFT descriptors for MipMap Stage01 export.";
+
+  const MipMapCandidateGraph graph =
+      CreateMipMapCandidateGraph(mmap_options, images);
+  WriteMipMapPairsText(output_path, graph, images);
+  if (!debug_path.empty()) {
+    WriteMipMapDebugCsv(debug_path, graph, images);
+  }
+
+  LOG(INFO) << "Exported " << graph.image_pairs.size()
+            << " candidate image pairs to " << output_path << ".";
 
   return EXIT_SUCCESS;
 }

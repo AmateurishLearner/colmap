@@ -92,6 +92,7 @@ int RunFeatureExtractor(int argc, char** argv);
 int RunFeatureImporter(int argc, char** argv);
 int RunExhaustiveMatcher(int argc, char** argv);
 int RunMatchesImporter(int argc, char** argv);
+int RunMipMapPairsExporter(int argc, char** argv);
 int RunSequentialMatcher(int argc, char** argv);
 int RunSpatialMatcher(int argc, char** argv);
 int RunTransitiveMatcher(int argc, char** argv);

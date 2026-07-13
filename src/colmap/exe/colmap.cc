@@ -119,6 +119,8 @@ int main(int argc, char** argv) {
                         &colmap::RunImageUndistorterStandalone);
   commands.emplace_back("mapper", &colmap::RunMapper);
   commands.emplace_back("matches_importer", &colmap::RunMatchesImporter);
+  commands.emplace_back("mipmap_pairs_exporter",
+                        &colmap::RunMipMapPairsExporter);
 #if defined(COLMAP_MVS_ENABLED)
   commands.emplace_back("mesh_simplifier", &colmap::RunMeshSimplifier);
   commands.emplace_back("mesh_texturer", &colmap::RunMeshTexturer);
